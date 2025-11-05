@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RPS-25 Winner Calculator</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: radial-gradient(circle at top, #222, #000);
+      color: #eee;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+    }
+    h1 {
+      margin-bottom: 10px;
+    }
+    select, button {
+      font-size: 1rem;
+      padding: 8px 12px;
+      margin: 5px;
+      border-radius: 6px;
+      border: none;
+    }
+    button {
+      background-color: #444;
+      color: white;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    button:hover {
+      background-color: #666;
+    }
+    #result {
+      margin-top: 20px;
+      font-size: 1.3rem;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <h1>RPS-25 Winner Calculator</h1>
+
+  <div>
+    <label>Player A:</label>
+    <select id="playerA"></select>
+    <label>Player B:</label>
+    <select id="playerB"></select>
+    <button onclick="determineWinner()">Fight!</button>
+  </div>
+
+  <div id="result"></div>
+
+  <script>
+    const options = [
+      "Gun","Dynamite","Nuke","Lightning","Devil","Dragon","Alien","Water",
+      "Bowl","Air","Moon","Paper","Sponge","Wolf","Cockroach","Tree","Man",
+      "Woman","Monkey","Snake","Axe","Scissors","Fire","Sun","Rock"
+    ];
+
+    const playerASelect = document.getElementById("playerA");
+    const playerBSelect = document.getElementById("playerB");
+    const resultDiv = document.getElementById("result");
+
+    options.forEach((opt, index) => {
+      const a = document.createElement("option");
+      const b = document.createElement("option");
+      a.value = b.value = index;
+      a.textContent = b.textContent = opt;
+      playerASelect.appendChild(a);
+      playerBSelect.appendChild(b);
+    });
+
+    function determineWinner() {
+      const a = parseInt(playerASelect.value);
+      const b = parseInt(playerBSelect.value);
+      const diff = (a - b + 25) % 25;
+
+      let result;
+      if (diff === 0) result = "It's a draw!";
+      else if (diff >= 1 && diff <= 12) result = "Player A wins!";
+      else result = "Player B wins!";
+
+      resultDiv.textContent = result;
+    }
+  </script>
+</body>
+</html>
