@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RPS Custom Variant Creator</title>
+<style>
+  body { font-family: Arial, sans-serif; background: #111; color: #eee; text-align: center; padding: 20px;}
+  input, button, select { padding: 6px 10px; margin: 5px; border-radius: 5px; border: none; font-size: 1rem;}
+  button { cursor: pointer; background: #444; color: #fff; transition: 0.2s; }
+  button:hover { background: #666; }
+  table { margin: 20px auto; border-collapse: collapse; }
+  td, th { padding: 6px 10px; border: 1px solid #555; }
+  th { background: #333; }
+</style>
+</head>
+<body>
+<h1>RPS Custom Variant Creator</h1>
+
+<div>
+  <input type="text" id="newOption" placeholder="Add option name">
+  <button onclick="addOption()">Add Option</button>
+  <button onclick="removeLast()">Remove Last Option</button>
+  <button onclick="clearAll()">Clear All</button>
+</div>
+
+<div>
+  <p>Total options: <span id="optionCount">0</span> (<span id="oddWarning"></span>)</p>
+</div>
+
+<div>
+  <label>Player A:</label>
+  <select id="playerA"></select>
+  <label>Player B:</label>
+  <select id="playerB"></select>
+  <button onclick="determineWinner()">Fight!</button>
+</div>
+
+<div id="result" style="margin-top:15px;font-weight:bold;"></div>
+
+<div id="matrix"></div>
+
+<script>
+let options = [];
+
+const playerASelect = document.getElementById("playerA");
+const playerBSelect = document.getElementById("playerB");
+const resultDiv = document.getElementById("result");
+const optionCountSpan = document.getElementById("optionCount");
+const oddWarning = document.getElementById("oddWarning");
+const matrixDiv = document.getElementById("matrix");
+
+function updateUI() {
+  // Update counts
+  optionCountSpan.textContent = options.length;
+  oddWarning.textContent = options.length % 2 === 1 ? "✅ Odd number, good!" : "⚠️ Must be odd!";
+  
+  // Update select options
+  [playerASelect, playerBSelect].forEach(select => {
+    select.innerHTML = "";
+    options.forEach((opt, idx) => {
+      let o = document.createElement("option");
+      o.value = idx;
+      o.textContent = opt;
+      select.appendChild(o);
+    });
+  });
+
+  // Update matrix
+  if(options.length % 2 === 1 && options.length > 0){
+    let html = "<table><tr><th>Option</th>";
+    options.forEach(o=> html += `<th>${o}</th>`);
+    html += "</tr>";
+    options.forEach((a,i)=>{
+      html += `<tr><th>${a}</th>`;
+      options.forEach((b,j)=>{
+        const diff = (i-j+options.length) % options.length;
+        let cell = "";
+        if(diff===0) cell="Draw";
+        else if(diff>=1 && diff<=Math.floor(options.length/2)) cell="A wins";
+        else cell="B wins";
+        html += `<td>${cell}</td>`;
+      });
+      html += "</tr>";
+    });
+    html += "</table>";
+    matrixDiv.innerHTML = html;
+  } else {
+    matrixDiv.innerHTML = "";
+  }
+}
+
+function addOption() {
+  const val = document.getElementById("newOption").value.trim();
+  if(val && !options.includes(val)){
+    options.push(val);
+    document.getElementById("newOption").value = "";
+    updateUI();
+  }
+}
+
+function removeLast() {
+  options.pop();
+  updateUI();
+}
+
+function clearAll() {
+  options = [];
+  updateUI();
+}
+
+function determineWinner() {
+  if(options.length % 2 === 0 || options.length === 0){
+    resultDiv.textContent = "⚠️ Total options must be odd!";
+    return;
+  }
+  const a = parseInt(playerASelect.value);
+  const b = parseInt(playerBSelect.value);
+  const diff = (a-b+options.length)%options.length;
+  let result;
+  if(diff===0) result="It's a draw!";
+  else if(diff>=1 && diff<=Math.floor(options.length/2)) result="Player A wins!";
+  else result="Player B wins!";
+  resultDiv.textContent = result;
+}
+
+updateUI();
+</script>
+</body>
+</html>
