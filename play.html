@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RPS-25 Duel</title>
+<style>
+  body { font-family: Arial, sans-serif; background: #111; color: #eee; text-align: center; padding: 20px; }
+  select, button { padding: 6px 12px; margin: 5px; font-size: 1rem; border-radius: 5px; border: none; }
+  button { background: #444; color: #fff; cursor: pointer; transition: 0.2s; }
+  button:hover { background: #666; }
+  #result { margin-top: 20px; font-size: 1.3rem; font-weight: bold; }
+</style>
+</head>
+<body>
+
+<h1>RPS-25 Duel</h1>
+
+<div>
+  <label>Mode:</label>
+  <select id="modeSelect" onchange="resetGame()">
+    <option value="ai">Play vs AI</option>
+    <option value="2p">2-Player Local</option>
+  </select>
+</div>
+
+<div id="playerDiv">
+  <label>Player A:</label>
+  <select id="playerA"></select>
+  <button onclick="submitMove()">Submit</button>
+</div>
+
+<div id="playerBDiv" style="display:none;">
+  <label>Player B:</label>
+  <select id="playerB"></select>
+  <button onclick="submitMove()">Submit</button>
+</div>
+
+<div id="result"></div>
+
+<script>
+const options = [
+  "Gun","Dynamite","Nuke","Lightning","Devil","Dragon","Alien","Water",
+  "Bowl","Air","Moon","Paper","Sponge","Wolf","Cockroach","Tree","Man",
+  "Woman","Monkey","Snake","Axe","Scissors","Fire","Sun","Rock"
+];
+
+const playerASelect = document.getElementById("playerA");
+const playerBSelect = document.getElementById("playerB");
+const modeSelect = document.getElementById("modeSelect");
+const playerDiv = document.getElementById("playerDiv");
+const playerBDiv = document.getElementById("playerBDiv");
+const resultDiv = document.getElementById("result");
+
+let playerAMove = null;
+let playerBMove = null;
+
+options.forEach((opt, idx) => {
+  let a = document.createElement("option");
+  let b = document.createElement("option");
+  a.value = b.value = idx;
+  a.textContent = b.textContent = opt;
+  playerASelect.appendChild(a);
+  playerBSelect.appendChild(b);
+});
+
+function resetGame() {
+  playerAMove = null;
+  playerBMove = null;
+  resultDiv.textContent = "";
+  if(modeSelect.value === "ai") {
+    playerBDiv.style.display = "none";
+    playerDiv.style.display = "block";
+  } else {
+    playerDiv.style.display = "block";
+    playerBDiv.style.display = "none";
+  }
+}
+
+function submitMove() {
+  if(modeSelect.value === "ai") {
+    const a = parseInt(playerASelect.value);
+    const b = Math.floor(Math.random() * options.length);
+    showWinner(a,b,"Player A","AI");
+  } else {
+    if(playerAMove === null) {
+      playerAMove = parseInt(playerASelect.value);
+      playerBDiv.style.display = "block";
+      playerDiv.style.display = "none";
+      resultDiv.textContent = "Player B, choose your move!";
+    } else {
+      playerBMove = parseInt(playerBSelect.value);
+      showWinner(playerAMove, playerBMove, "Player A", "Player B");
+      playerAMove = null;
+      playerBMove = null;
+      playerDiv.style.display = "block";
+      playerBDiv.style.display = "none";
+    }
+  }
+}
+
+function showWinner(a,b,nameA,nameB) {
+  const diff = (a-b+options.length)%options.length;
+  let result;
+  if(diff===0) result="It's a draw!";
+  else if(diff>=1 && diff<=Math.floor(options.length/2)) result=`${options[a]} wins!`;
+  else result=`${options[b]} wins!`;
+  resultDiv.textContent = `${nameA}: ${options[a]} | ${nameB}: ${options[b]} → ${result}`;
+}
+
+resetGame();
+</script>
+
+</body>
+</html>
